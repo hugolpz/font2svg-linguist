@@ -10,7 +10,7 @@ const fonts = {
 	"cwTex" : './fonts/cwtex/cwTeXQKaiZH-Medium.ttf',
 };
 const textToSVGort = TextToSVG.loadSync(fonts.cwTex) || TextToSVG.loadSync(); // default font for ort
-const textToSVGpho = textToSVGort; 																					// local custom font for pho
+const textToSVGpho = TextToSVG.loadSync(); 																					// local custom font for pho
 
 // Load list of character
 const data = require('./data/lists-cmn.json');  console.log("JSON data.lists[0]:", data.lists[0]);
@@ -45,9 +45,9 @@ const styles= {
 			x: glyph.middle, y: glyph.height-margin.top, fontSize: glyph.height/25*27, anchor: 'center',
 			attributes: { fill: '#000', 'font-family':'cwTeX Q KaiZH','font-weight':'bold','font-style':'normal' } // the font-* DO NOT work
 		}
-		//,pho : { x: glyph.middle, y: 10, fontSize: 20, anchor: 'middle center', attributes:
-		//	{ fill: '#666', 'font-family':'FreeSans','font-weight':'bold','font-style':'italic' } // the font-* DO NOT work
-		//},
+		,pho : { x: glyph.middle, y: 20, fontSize: 40, anchor: 'middle center', attributes:
+			{ fill: '#666','font-weight':'bold','font-style':'italic' } // the font-* DO NOT work
+		},
 	},
 	"bottom" : { },
 	"left-downward" : { },
@@ -62,7 +62,7 @@ for (let char of kangxi) {
 	var style = styles[char.style] || 'top';
 	// Create svg, then paths
 	const svgOrt = textToSVGort.getPath(char.ort || char.char, style.ort || styles.top.ort);
-	const svgPho = textToSVGpho.getPath(char.pho || "", style.pho || styles.top.pho)|| '';
+	const svgPho = textToSVGpho.getPath(char.pho || char.en, style.pho || styles.top.pho) || '';
 	//Create valid svg file's data
 	var svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="`+doc.width+`" height="`+doc.height+`" style="border:1px solid #666">`
 	    + svgOrt
@@ -73,6 +73,6 @@ for (let char of kangxi) {
 	fs.writeFile('./build/'+ fileName, svg);
 	// Few feedbacks
 	console.log('File generation : done.');
-	console.log('File data : '+JSON.stringify([ char.ort, char.rad, char.char]));
+	console.log('File data : '+JSON.stringify([ char.ort, char.rad, char.char, char.en]));
 	console.log('File location : ./build/'+fileName);
 }
