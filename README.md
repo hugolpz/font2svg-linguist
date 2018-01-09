@@ -38,9 +38,12 @@ First, edit ./index.js in orther to set the initial variable to your convenience
 
 ## Fonts
 
-* [Noto Sans CJK](https://github.com/googlei18n/noto-cjk) as it [support Chinese and is under open licence](https://www.wikiwand.com/en/Noto_fonts).
+* Open [CJKV fonts](https://en.wikipedia.org/wiki/List_of_CJK_fonts):
+** [Noto Sans CJK](https://github.com/googlei18n/noto-cjk) as it [support Chinese and is under open licence](https://www.wikiwand.com/en/Noto_fonts).
+** AR PL UMing,	AR PL UKai, AR PL ShanHeiSun,	AR PL ZenKai, cwTeXQKaiZH-Medium.ttf, cwTeXQMingZH-Medium.ttf from [](http://zenozeng.github.io/Free-Chinese-Fonts/)
 * Other fonts
-* Note: some font files may returns `Error('Unsupported OpenType signature ' + signature);new Error('Unsupported OpenType signature ' + signature);`
+
+Note: some font files may returns `Error('Unsupported OpenType signature ' + signature);new Error('Unsupported OpenType signature ' + signature);`
 
 ## Motivation
 

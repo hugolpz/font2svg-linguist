@@ -10,8 +10,8 @@
     { "type": "levels", "id": "EBCL", "name": "ebcl_(levels): 320 zi.", "presentation": "Allanic (unpublished): A1, 250+70 zi ; A2 630 zi. Coverage: unpublished. http://ebcl.eu.com/wp-content/uploads/2012/04/EBCL-List-of-A1-characters-Demo-V1.pdf" }
   ],
   "lists" :[
-    { "sourceId": "Subtlex", "nameData": "Subtlex_3000", "info": "n.a.",
-     "list": "中一我的你是了不们这他么在"},
+    { "sourceId": "Kangxi", "nameData": "kangxi", "info": "n.a.",
+     "list": "丨一"},
     { "sourceId": "Alphanumeric", "nameData": "Numbers", "info": "n.a.",
      "list": "0123456789" },
     { "sourceId": "Alphanumeric", "nameData": "Western alphabet —lower and upper case:", "info": "n.a.",
