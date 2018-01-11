@@ -1,31 +1,48 @@
 /* takes in entry :                        */
-// Tooling
+/* ************************************************************************* */
+/* INIT variables ********************************************************** */
+let DATAJSONFILE = "",
+	DATAJSONKEY = "",
+	FILESUFFIX = "-xinshu.svg",
+	DIR = "./build/",
+	FONTPATH = "",
+	FONTOPTION = "xinshu";
+let STYLE = "top",
+	WIDTH = "",
+	HEIGHT = "",
+	MARGIN_TOP = "",
+	MARGIN_RIGHT = "",
+	MARGIN_BOTTOM = "",
+	MARGIN_LEFT = "";
+
+/* ************************************************************************* */
+/* Toolings **************************************************************** */
 const fs = require('fs');
 const TextToSVG = require('text-to-svg');
-// Define fonts for ort and pho
+fs.mkdir(DIR, 0o700, err => { if (err) { console.log('./build folder already exists'); } });
+
+/* ************************************************************************* */
+/* Set fonts for glyph and annotation ************************************** */
 const fonts = {
-	"ukai" : './fonts/ukai.ttc',
-	"nonSerif" : './fonts/noto/NotoSerifCJKtc-Medium.otf',
-	"nonSans" : './fonts/noto/NotoSansTC-Medium.otf',
-	"cwTex" : './fonts/cwtex/cwTeXQKaiZH-Medium.ttf',
+	"ukai"     : './fonts/ukai.ttc', "comment": "",
+	"nonSerif" : './fonts/noto/NotoSerifCJKtc-Medium.otf', "comment": "",
+	"nonSans"  : './fonts/noto/NotoSansTC-Medium.otf', "comment": "",
+	"cwTex"    : './fonts/cwtex/cwTeXQKaiZH-Medium.ttf', "comment": "",
+	"xinshu"   : './fonts/hyi1gf.ttf', "comment": "for CN users, store traditional glyph on simplified unicode points." // m = 汉仪行楷繁
 };
-const textToSVGort = TextToSVG.loadSync(fonts.cwTex) || TextToSVG.loadSync(); // default font for ort
-const textToSVGpho = TextToSVG.loadSync(); 																					// local custom font for pho
+const textToSVGglyph = TextToSVG.loadSync(FONTPATH || fonts[FONTOPTION]) || TextToSVG.loadSync(); 	// custom font, or then default
+const textToSVGannotation = TextToSVG.loadSync();																										// local custom font
 
-// Load list of character
-const data = require('./data/lists-cmn.json');  console.log("JSON data.lists[0]:", data.lists[0]);
-const list = data.lists[0].list.split("");      console.log("JSON list:", list);
-const kangxi = require('./data/kangxi-rad-to-char.json');  console.log("JSON kangxi[0]:", kangxi[0]);
+/* ************************************************************************* */
+/* Load list of characters ************************************************* */
+DATAJSONFILE = [ "./data/kangxi-rad-to-char.json", "./data/lists-cmn.json" ]
+let loaded = require(DATAJSONFILE[1]), data = "";
+loaded.lists ? data = loaded.lists[8].list : data = loaded;
+typeof data === 'string'? data = data.split("") : data = data;
+console.log("JSON data, proccessed:", data);
 
-fs.mkdir('./build', 0o700, err => { if (err) { console.log('./build folder already exists'); } });
-
-/* Variables values
-var list = [
-	{ ort: '西', pho: 'xī', style: 'top' },
-	{ ort: '中', pho: 'zhong1', style: 'top' }
-]; */
-
-// Define SVG outline
+/* ************************************************************************* */
+/* SVG outline and style *************************************************** */
 var doc = { width: 300, height: 300 };
 var margin = { top: 15, right: 15, bottom: 15, left: 15 };
 var glyph = {
@@ -39,40 +56,50 @@ console.log(margin);
 console.log(glyph);
 
 // All possibles styles
-const styles= {
+const styles = {
 	"top": {
-	  ort : {
+	  glyph : {
 			x: glyph.middle, y: glyph.height-margin.top, fontSize: glyph.height/25*27, anchor: 'center',
 			attributes: { fill: '#000', 'font-family':'cwTeX Q KaiZH','font-weight':'bold','font-style':'normal' } // the font-* DO NOT work
-		}
-		,pho : { x: glyph.middle, y: 20, fontSize: 40, anchor: 'middle center', attributes:
+		},
+		annotation : {
+			x: glyph.middle, y: 20, fontSize: 40, anchor: 'middle center', attributes:
 			{ fill: '#666','font-weight':'bold','font-style':'italic' } // the font-* DO NOT work
 		},
-	},
-	"bottom" : { },
+	}
+	/* Various other configuations for annotations *************************** **
+	,"bottom" : { },
 	"left-downward" : { },
 	"left-upward" : { },
-	"right-downward" : { },
-	"right-upward" : { }
+	"
+	right-downward" : { },
+	"right-upward" : { } ***************************************************** */
 };
-console.log(styles.top.ort)
+// Chosen style
+var style = styles["top"];
+console.log(style)
 
-for (let char of kangxi) {
-	// Active style
-	var style = styles[char.style] || 'top';
+/* ************************************************************************* */
+/* LOOOP WRITING SVGS ****************************************************** */
+for (let char of data) {
+	let l = Object.keys("西").length || char.length;
+	console.log(l >1? "array !!!"+l+"-"+char.length: "character!"+l+"-"+char.length)
+
 	// Create svg, then paths
-	const svgOrt = textToSVGort.getPath(char.ort || char.char, style.ort || styles.top.ort);
-	const svgPho = textToSVGpho.getPath(char.pho || char.en, style.pho || styles.top.pho) || '';
+	let glyph		= char.glyph || char,
+	prefix			= char.file || char,
+	annotation	= char.annotation || "";
+	let svgGlyph      = textToSVGglyph.getPath(glyph, style.glyph);
+	let svgAnnotation = textToSVGannotation.getPath(annotation, style.annotation) || '';
 	//Create valid svg file's data
-	var svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="`+doc.width+`" height="`+doc.height+`" style="border:1px solid #666">`
-	    + svgOrt
-	    + svgPho
+	let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="`+doc.width+`" height="`+doc.height+`" style="border:1px solid #666">`
+	    + svgGlyph
+	    + svgAnnotation
 	    + `</svg>`;
 	// Print to file
-	const fileName = char.rad +'-kaishu.svg';
-	fs.writeFile('./build/'+ fileName, svg);
+	let fileName = prefix +FILESUFFIX;
+	fs.writeFile(DIR+ fileName, svg);
 	// Few feedbacks
-	console.log('File generation : done.');
-	console.log('File data : '+JSON.stringify([ char.ort, char.rad, char.char, char.en]));
-	console.log('File location : ./build/'+fileName);
+	console.log('File data : '+JSON.stringify([ char, char[0], char.file, char.glyph, char.annotation]));
+	console.log('File generation : '+DIR+fileName);
 }
