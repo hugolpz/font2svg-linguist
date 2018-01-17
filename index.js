@@ -3,10 +3,10 @@
 /* INIT variables ********************************************************** */
 let DATAJSONFILE = "",
 	DATAJSONKEY = "",
-	FILESUFFIX = "-xinshu.svg",
+	FILESUFFIX = "-songti.svg",
 	DIR = "./build/",
 	FONTPATH = "",
-	FONTOPTION = "xinshu";
+	FONTOPTION = "nonSerif";
 let STYLE = "top",
 	WIDTH = "",
 	HEIGHT = "",
@@ -19,6 +19,10 @@ let STYLE = "top",
 /* Toolings **************************************************************** */
 const fs = require('fs');
 const TextToSVG = require('text-to-svg');
+const unihan = require('unihan');
+const cjkUnihan = require('cjk-unihan');
+cjkUnihan.get("我", function(err, result){ console.log("Full lookup all done:", result); });
+
 fs.mkdir(DIR, 0o700, err => { if (err) { console.log('./build folder already exists'); } });
 
 /* ************************************************************************* */
@@ -27,7 +31,7 @@ const fonts = {
 	"ukai"     : './fonts/ukai.ttc', "comment": "",
 	"nonSerif" : './fonts/noto/NotoSerifCJKtc-Medium.otf', "comment": "",
 	"nonSans"  : './fonts/noto/NotoSansTC-Medium.otf', "comment": "",
-	"cwTex"    : './fonts/cwtex/cwTeXQKaiZH-Medium.ttf', "comment": "",
+	"cwtex"    : './fonts/cwtex/cwTeXQKaiZH-Medium.ttf', "comment": "traditional characters, no simplified, radicals to extract from others",
 	"xinshu"   : './fonts/hyi1gf.ttf', "comment": "for CN users, store traditional glyph on simplified unicode points." // m = 汉仪行楷繁
 };
 const textToSVGglyph = TextToSVG.loadSync(FONTPATH || fonts[FONTOPTION]) || TextToSVG.loadSync(); 	// custom font, or then default
@@ -35,11 +39,28 @@ const textToSVGannotation = TextToSVG.loadSync();																										// lo
 
 /* ************************************************************************* */
 /* Load list of characters ************************************************* */
-DATAJSONFILE = [ "./data/kangxi-rad-to-char.json", "./data/lists-cmn.json" ]
+DATAJSONFILE = [ "./data/kangxi-rad-to-char.json", "./data/lists-cmn.json", "data/unihan.json" ]
 let loaded = require(DATAJSONFILE[1]), data = "";
-loaded.lists ? data = loaded.lists[8].list : data = loaded;
+loaded.lists ? data = loaded.lists[9].list : data = loaded;
 typeof data === 'string'? data = data.split("") : data = data;
 console.log("JSON data, proccessed:", data);
+
+
+/* ************************************************************************* */
+/* CLEAN UP UNIHAN ********************************************************* *
+var unihan = unihanRaw.map(function(obj) {
+    return {
+        char: obj.char,
+        kMandarin: obj.kMandarin
+    }
+})
+var unihanReady = unihanRaw.map(function(obj) {
+    return obj.char : {
+        glyph: obj.char,
+        annotation: obj.kMandarin
+    }
+})
+/* ************************************************************************* */
 
 /* ************************************************************************* */
 /* SVG outline and style *************************************************** */

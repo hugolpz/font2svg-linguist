@@ -9,7 +9,9 @@
   },
   "dependencies": {
     "text-to-svg": "^3.0.1",
-    "webfont": "^7.0.0"
+    "webfont": "^7.0.0",
+    "cjk-unihan": "0.0.1-a",
+    "unihan":"0.0.2"
   },
   "devDependencies": {
     "ava": "^0.18.0",
