@@ -1,8 +1,19 @@
 {
-  "name": "hanzi-pinyin-font",
-  "description": "Project to create a Chinese font displaying Hanzi (汉字) characters followed by transliteration/pronunciation (Pīnyīn)",
+  "name": "font2svg-linguist",
+  "repository" : { "type" : "git", "url" : "https://github.com/hugolpz/font2svg-linguist.git"},
+  "bugs": { "url" : "https://github.com/hugolpz/font2svg-linguist/issues"},
+  "description": "Print visual representations of texts into svg, optionaly with annotations",
+  "keywords": ["font", "unihan", "languages"],
   "main": "index.js",
-  "author": [ "Édouard Lopez", "Hugo Lopez"],
+  "author": [ "Hugo Lopez" ],
+  "license": "Apache-2.0",
+  "man": {
+    "name" : "font2svg-linguist",
+    "version" : "0.0.1",
+    "description" : "A module to print svg from fonts, optionaly enriched by additional by annotations",
+    "main" : "index.js",
+    "man" : "./man/doc.1"
+  },
   "scripts": {
     "start": "node --require babel-core/register ./index.js",
     "test": "ava test ; xo"

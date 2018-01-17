@@ -27,6 +27,7 @@ And flexibility for other variants.
 * Required : `nodejs`, [`NPM`](http://npmjs.org/)
 * Optional : git
 
+
 ## Install
 
 	npm install
@@ -35,6 +36,11 @@ And flexibility for other variants.
 First, edit ./index.js in orther to set the initial variable to your convenience. Then :
 
 	npm start
+
+## Meta-data
+For Chinese, I use Unihan, processed via [Unihan-etl](https://github.com/cihai/unihan-etl) :
+
+	unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ./unihan.json
 
 ## Fonts
 

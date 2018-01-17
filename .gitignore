@@ -1,3 +1,12 @@
+# Fonts
+fonts/
+!fonts/cwtex/cwTeXQKaiZH-Medium.ttf
+
+# Resources
+resources/*
+!resources/tpl/*
+!resources/unihan/unihan-documentation-v10.pdf
+
 # Logs
 logs
 *.log
