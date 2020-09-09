@@ -3,10 +3,10 @@
 /* INIT variables ********************************************************** */
 let DATAJSONFILE = "",
 	DATAJSONKEY = "",
-	FILESUFFIX = "-songti.svg",
+	FILESUFFIX = "-kaishu.svg",
 	DIR = "./build/",
 	FONTPATH = "",
-	FONTOPTION = "nonSerif";
+	FONTOPTION = "edukai";
 let STYLE = "top",
 	WIDTH = "",
 	HEIGHT = "",
@@ -28,6 +28,12 @@ fs.mkdir(DIR, 0o700, err => { if (err) { console.log('./build folder already exi
 /* ************************************************************************* */
 /* Set fonts for glyph and annotation ************************************** */
 const fonts = {
+	"edukai" : './fonts/edukai-3.ttf', "comment": "TW! 教育部標準楷書字形檔 http://creativecommons.org/licenses/by-nd/3.0/tw/",
+	"xingkai":'./fonts/STXingkai.ttf', "comment": "http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html",
+	"xiaozhuan":'./fonts/FZXiaoZhuanTi.ttf', "comment": "http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html",
+	"lishu1": './fonts/UnYetgul.ttf', "comment": "trad only, http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html",
+	"lishu2": './fonts/HanWangLiSuMedium.ttf', "comment": "trad only, http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html",
+	"zhuyin": './fonts/HanWangKaiMediumChuIn.ttf', "comment":'http://www.wazu.jp/gallery/Fonts_ChineseTraditional.html',
 	"ukai"     : './fonts/ukai.ttc', "comment": "",
 	"nonSerif" : './fonts/noto/NotoSerifCJKtc-Medium.otf', "comment": "",
 	"nonSans"  : './fonts/noto/NotoSansTC-Medium.otf', "comment": "",
@@ -41,13 +47,13 @@ const textToSVGannotation = TextToSVG.loadSync();																										// lo
 /* Load list of characters ************************************************* */
 DATAJSONFILE = [ "./data/kangxi-rad-to-char.json", "./data/lists-cmn.json", "data/unihan.json" ]
 let loaded = require(DATAJSONFILE[1]), data = "";
-loaded.lists ? data = loaded.lists[9].list : data = loaded;
+loaded.lists ? data = loaded.lists[8].list : data = loaded;
 typeof data === 'string'? data = data.split("") : data = data;
 console.log("JSON data, proccessed:", data);
 
 
 /* ************************************************************************* */
-/* CLEAN UP UNIHAN ********************************************************* *
+/* TO EXPORT : CLEAN UP UNIHAN ********************************************* *
 var unihan = unihanRaw.map(function(obj) {
     return {
         char: obj.char,
@@ -81,20 +87,22 @@ const styles = {
 	"top": {
 	  glyph : {
 			x: glyph.middle, y: glyph.height-margin.top, fontSize: glyph.height/25*27, anchor: 'center',
-			attributes: { fill: '#000', 'font-family':'cwTeX Q KaiZH','font-weight':'bold','font-style':'normal' } // the font-* DO NOT work
-		},
+			attributes: { fill: '#000', 'font-family':'cwTeX Q KaiZH','font-weight':'bold','font-style':'normal' } },
 		annotation : {
-			x: glyph.middle, y: 20, fontSize: 40, anchor: 'middle center', attributes:
-			{ fill: '#666','font-weight':'bold','font-style':'italic' } // the font-* DO NOT work
-		},
+			x: glyph.middle, y: 20, fontSize: 40, anchor: 'middle center',
+			attributes: { fill: '#666','font-weight':'bold','font-style':'italic' } },
+	},
+	"bottom" : {
+		glyph : {
+			x: glyph.middle, y: glyph.height-margin.top, fontSize: glyph.height/25*27, anchor: 'center',
+			attributes: { fill: '#000', 'font-family':'cwTeX Q KaiZH','font-weight':'bold','font-style':'normal' } },
+		annotation : {
+			x: glyph.middle, y: 280, fontSize: 40, anchor: 'middle center', attributes:
+			{ fill: '#666','font-weight':'bold','font-style':'italic' } },
 	}
-	/* Various other configuations for annotations *************************** **
-	,"bottom" : { },
+/* Various other configuations for annotations *************************** **,
 	"left-downward" : { },
-	"left-upward" : { },
-	"
-	right-downward" : { },
-	"right-upward" : { } ***************************************************** */
+	"right-downward" : { } ***************************************************** */
 };
 // Chosen style
 var style = styles["top"];
@@ -103,6 +111,7 @@ console.log(style)
 /* ************************************************************************* */
 /* LOOOP WRITING SVGS ****************************************************** */
 for (let char of data) {
+	// test if loading rich object { ,..., }
 	let l = Object.keys("西").length || char.length;
 	console.log(l >1? "array !!!"+l+"-"+char.length: "character!"+l+"-"+char.length)
 
@@ -110,13 +119,15 @@ for (let char of data) {
 	let glyph		= char.glyph || char,
 	prefix			= char.file || char,
 	annotation	= char.annotation || "";
-	let svgGlyph      = textToSVGglyph.getPath(glyph, style.glyph);
-	let svgAnnotation = textToSVGannotation.getPath(annotation, style.annotation) || '';
+	let svgGlyph      = textToSVGglyph.getD(glyph, style.glyph),
+			svgAnnotation = textToSVGannotation.getD(annotation, style.annotation);
+	let svgGlyphPath  = svgGlyph? `<path fill="#000" id="glyph" d="`+svgGlyph+`"/>`:'',
+			svgAnnotationPath = annotation? `<path fill="#000" id="annotation" d="`+svgAnnotationPath+`"/>` :'';
 	//Create valid svg file's data
 	let svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="`+doc.width+`" height="`+doc.height+`" style="border:1px solid #666">`
-	    + svgGlyph
-	    + svgAnnotation
-	    + `</svg>`;
+		+ svgGlyphPath
+		+ svgAnnotationPath
+    + `</svg>`;
 	// Print to file
 	let fileName = prefix +FILESUFFIX;
 	fs.writeFile(DIR+ fileName, svg);
