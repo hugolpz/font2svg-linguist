@@ -27,7 +27,8 @@ fs.mkdir(DIR, 0o700, err => { if (err) { console.log('./build folder already exi
 
 /* ************************************************************************* */
 /* Test cjkUnihan ********************************************************** */
-cjkUnihan.get("我", function(err, result){ console.log("Full lookup all done:", result); });
+var zi = "我";
+cjkUnihan.get(zi, function(err, result){ console.log("cjkUnihan query on "+zi+": ", result); });
 
 /* ************************************************************************* */
 /* Set fonts for glyph and annotation ************************************** */
