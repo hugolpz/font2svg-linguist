@@ -2,35 +2,31 @@
 
 > Early draft : informations below might not accurate while this message is present.
 
+## Install
+
+> git clone --recurse-submodules git@github.com:hugolpz/font2svg-linguist.git
+> cd font2svg-linguist
+> npm install
+
 ## Input/Output
 **Input:** a free license unicode font, a json listing of (CJK) unicode characters, potentially with annotation.
 
 **Output :** serie of svg files with the glyph and optionally with the pinyin such as `{yourCharacter}-{type}.svg`.
 
 <p align="center">
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-top.png?raw=true" alt="Schematic image"/>
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-bottom.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-top.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-bottom.png?raw=true" alt="Schematic image"/>
   </p>
   <p align="center">
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-left-downward.png?raw=true" alt="Schematic image"/>
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-left-upward.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-left-downward.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-left-upward.png?raw=true" alt="Schematic image"/>
   </p>
   <p align="center">
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-right-downward.png?raw=true" alt="Schematic image"/>
-  <img width="100px" src="https://github.com/edouard-lopez/Hanzi-Pinyin-Font/blob/master//resources/tpl/annotation-right-upward.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-right-downward.png?raw=true" alt="Schematic image"/>
+  <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-right-upward.png?raw=true" alt="Schematic image"/>
 </p>
 
 And flexibility for other variants.
-
-## Software requirements
-
-* Required : `nodejs`, [`NPM`](http://npmjs.org/)
-* Optional : git
-
-
-## Install
-
-	npm install
 
 ## Usage
 First, edit ./index.js in orther to set the initial variable to your convenience. Then :
@@ -38,9 +34,10 @@ First, edit ./index.js in orther to set the initial variable to your convenience
 	npm start
 
 ## Meta-data
-For Chinese, I use Unihan, processed via [Unihan-etl](https://github.com/cihai/unihan-etl) :
+I use Unihan data for Chinese, processed via [Unihan-etl](https://github.com/cihai/unihan-etl) :
 
-	unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ./unihan.json
+	cd unihan-etl
+  unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ../data/unihan.json
 
 ## Fonts
 
