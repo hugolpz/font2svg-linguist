@@ -1,17 +1,17 @@
 # font2svgfiles
 
-> Early draft : informations below might not accurate while this message is present.
-
 ## Install
 
-> git clone --recurse-submodules git@github.com:hugolpz/font2svg-linguist.git
-> cd font2svg-linguist
-> npm install
+```bash
+git clone --recurse-submodules git@github.com:hugolpz/font2svg-linguist.git
+cd font2svg-linguist
+npm install
+```
 
 ## Input/Output
-**Input:** a free license unicode font, a json listing of (CJK) unicode characters, potentially with annotation.
+**Input:** a free license unicode font, a json array of (CJK) unicode characters such as :
 
-**Output :** serie of svg files with the glyph and optionally with the pinyin such as `{yourCharacter}-{type}.svg`.
+**Output :** serie of svg files `{yourCharacter}-{type}.svg` with the glyph and optionally with annotations, such as pinyin, English, or other. Seel gallery of examples below.
 
 <p align="center">
   <img width="100px" src="https://github.com/hugolpz/font2svg-linguist/blob/master//doc/tpl/annotation-top.png?raw=true" alt="Schematic image"/>
@@ -29,15 +29,56 @@
 And flexibility for other variants.
 
 ## Usage
-First, edit ./index.js in orther to set the initial variable to your convenience. Then :
+The script is still best used by hacking `./index.js` in orther to set the initial variable to your convenience. You may also use is via shell commands and options (see below).
 
-	npm start
+#### Commands
+Minimal example:
+
+```
+node index.js FONTOPTION=cwtex
+```
+
+#### Options
+* `DATAJSONFILES`: the file to be loaded to provide a list of characters or of characters objects.
+** default: `['./data/kangxi-rad-to-char.json', './data/cmn-lists.json', 'data/unihan.json']
+** characters alone : ['⼀',...]
+** characters objects : `[ { "file": "⼀",  "glyph": "一",  "annotation": "yī" }, {...}] `.
+* `FILESUFFIX` : general filename's suffixe for the current serie of files.
+** default: `'-kaishu.svg'`
+* `DIR` : where to output the files.
+** default: `'./build/'`
+* `FONTPATH` : path to the chosen font.
+** default: `'./fonts/cwtex/cwTeXQKaiZH-Medium.ttf'`
+* `FONTOPTION` : some fonts are provided with the project, provide its key to point to the file.
+** default: `cwtex`
+* `STYLE` : where to position annotations, relative to the character.
+** default: `'top'`
+** range: `'top'`, `'bottom'`,
+* `WIDTH` : the document wished width in pixels.
+** default: `300`
+** range: `>0`
+* `HEIGHT` : the document wished height in pixels.
+** default: `300`
+** range: `>0`
+* `MARGINS` : the margins sizes between the character and the document's border, defines the character's size by substractions. Order is `top`, `right`, `bottom`, `left`, like in `CSS`.
+** default: `'15 15 15 15'`
+** range: `'>0 >0 >0 >0'`
+
+Under consideration:
+* `DATAJSONKEY` : to tap into unihan. 
+** default: `kMandarin`
+** range : `kCantonese`, `kDefinition`, `kHangul`, `kHanyuPinlu`, `kHanyuPinyin`, `kMandarin`, `kTang`, `kPhonetic`, `kHDZRadBreak`, `kKorean`, `kJapaneseKun`, `kJapaneseOn` and more. See Unihan documentation for more details.
+
+## Options
+
 
 ## Meta-data
 I use Unihan data for Chinese, processed via [Unihan-etl](https://github.com/cihai/unihan-etl) :
 
-	cd unihan-etl
-  unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ../data/unihan.json
+```
+cd unihan-etl
+unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ../data/unihan.json
+```
 
 ## Fonts
 
