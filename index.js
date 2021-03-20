@@ -12,8 +12,8 @@ let DATAJSONFILES = process.env.DATAJSONFILES || ['./data/kangxi-rad-to-char.jso
   DATAJSONKEY = process.env.DATAJSONKEY || '', // to review
   FILESUFFIX = process.env.FILESUFFIX || '-kaishu.svg',
   DIR = process.env.DIR || './build/',
-  FONTPATH = process.env.FONTPATH || './fonts/cwtex/cwTeXQKaiZH-Medium.ttf',
-  FONTOPTION = process.env.FONTOPTION || 'edukai';
+  FONTOPTION = process.env.FONTOPTION || 'kaishu';
+  FONTPATH = process.env.FONTPATH || './fonts/cwtex/cwTeXQKaiZH-Medium.ttf';
 let STYLE = process.env.STYLE || 'top', // to review
   WIDTH = process.env.WIDTH || 300,
   HEIGHT = process.env.HEIGHT || 300,
@@ -77,11 +77,11 @@ const fonts = {
     fontpath: './fonts/ukai.ttc',
     comment: ''
   },
-  'nonSerif': {
+  'notoSerif': {
     fontpath: './fonts/noto/NotoSerifCJKtc-Medium.otf',
     comment: ''
   },
-  'nonSans': {
+  'notoSans': {
     fontpath: './fonts/noto/NotoSansTC-Medium.otf',
     comment: ''
   },
@@ -90,13 +90,17 @@ const fonts = {
     comment: 'traditional characters, no simplified, radicals to extract from others',
     'font-family': 'cwTeX Q KaiZH'
   },
+  'kaishu': {
+    fontpath: './fonts/kaishu/AR_PL_UKai_CN.ttf',
+    comment: 'stores radicals, radical extension.'
+  },
   'xinshu': {
     fontpath: './fonts/hyi1gf.ttf',
     comment: 'for CN users, store traditional glyph on simplified unicode points.'
   } // m = 汉仪行楷繁
 };
 
-var fontPath = FONTPATH || fonts[FONTOPTION].fontpath;
+var fontPath = fonts[FONTOPTION].fontpath || FONTPATH ;
 const textToSVGglyph = fontPath ? TextToSVG.loadSync(fontPath) : TextToSVG.loadSync(); // custom font, or then default
 const textToSVGannotation = TextToSVG.loadSync(); // local custom font
 
@@ -197,7 +201,7 @@ console.log(style)
 /* ************************************************************************* */
 /* Load list of characters ************************************************* */
 /* THisn iS REaLLy UGLY and UN SCALABLE !!!!! */
-let loaded = require(DATAJSONFILES[1]);
+let loaded = require(DATAJSONFILES[0]);
 let data = '';
 loaded.lists ? data = loaded.lists[8].list : data = loaded;
 typeof data === 'string' ? data = data.split('') : data = data;
