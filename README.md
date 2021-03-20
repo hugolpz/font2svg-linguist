@@ -35,7 +35,7 @@ The script is still best used by hacking `./index.js` in orther to set the initi
 Minimal example:
 
 ```
-node index.js FONTOPTION=cwtex
+node index.js FONTOPTION=kaishu
 ```
 
 #### Options

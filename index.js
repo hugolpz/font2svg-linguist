@@ -73,10 +73,6 @@ const fonts = {
     fontpath: './fonts/HanWangKaiMediumChuIn.ttf',
     comment: 'http://www.wazu.jp/gallery/Fonts_ChineseTraditional.html'
   },
-  'ukai': {
-    fontpath: './fonts/ukai.ttc',
-    comment: ''
-  },
   'notoSerif': {
     fontpath: './fonts/noto/NotoSerifCJKtc-Medium.otf',
     comment: ''
