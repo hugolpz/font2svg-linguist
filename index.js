@@ -10,7 +10,7 @@ const cjkfonts = require('./fonts/cjkfonts.js'); // personal fonts
 /* INIT variables ********************************************************** */
 let GLYPHS = process.env.GLYPHS || undefined, // ex: 'ABCD...'
   ANNOTATIONFIELD = process.env.ANNOTATIONFIELD, // ex: 'kMandarin', "kDefinition", 
-  CMNLISTNAME = process.env.CMNLISTNAME || "Kangxi_radicals_214",
+  LISTNAME = process.env.LISTNAME, // ex: "Kangxi_radicals_214",
   FILESUFFIX = process.env.FILESUFFIX || '-kaishu.svg',
   DIR = process.env.DIR || './build/',
   FONTOPTION = process.env.FONTOPTION || 'kaishu',
@@ -36,9 +36,11 @@ let STYLE = process.env.STYLE || 'top',
 /* Load characters list, unihan. Output: {glyph:'屮', annotation:'sprout'} * */
 const cmnList= JSON.parse(fs.readFileSync('./data/cmn-lists.json', 'utf8'));
 const unihanRaw = JSON.parse(fs.readFileSync('./data/UNIHAN-SELECTED-FIELDS.json', 'utf8'));
-const selectedList = cmnList.lists.find(item => item.name==CMNLISTNAME); //"Kangxi_radicals_214" // USE SEARCH ? // Selects list from cmnLists.json
+const selectedList = cmnList.lists.find(item => item.name==LISTNAME); //"Kangxi_radicals_214" // USE SEARCH ? // Selects list from cmnLists.json
 const selectedChars = typeof GLYPHS === 'string' ? GLYPHS.split('') : selectedList.list.split('');
-console.log('selectedChars: ',selectedChars.join())
+console.log('selectedChars: ',selectedChars.join());
+
+// If dealing with Unihan characters
 unihanSelectedChars = unihanRaw.filter((char) => selectedChars.includes(char.char))
 console.log('dictOfSelected[0]: ',unihanSelectedChars[0])
 var keepFirstWord = function(str){ 
@@ -51,8 +53,13 @@ dict = unihanSelectedChars.map( item => {
     phonetic: item['kMandarin'], // not used, just a human friendly helper.
   }
 });
-console.log('dict[0] (reduced): ',dict[0])
+// If dealing with non-Unihan characters   <--------------------------------------------------------- Section not tested !!
+dict = dict === [] ? 
+  selectedList.list!== [] ? selectedList.list.split('').map(item => {return { glyph: item, annotation:'' }} ) 
+  : GLYPHS.split('').map(item => {return { glyph: item, annotation:'' }} );
 
+
+console.log('dict[0] (reduced): ',dict[0])
 
 /* ************************************************************************* */
 /* Test cjkUnihan ********************************************************** 
