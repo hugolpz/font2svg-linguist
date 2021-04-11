@@ -56,7 +56,7 @@ dict = unihanSelectedChars.map( item => {
 // If dealing with non-Unihan characters   <--------------------------------------------------------- Section not tested !!
 dict = dict === [] ? 
   selectedList.list!== [] ? selectedList.list.split('').map(item => {return { glyph: item, annotation:'' }} ) 
-  : GLYPHS.split('').map(item => {return { glyph: item, annotation:'' }} );
+  : GLYPHS.split('').map(item => {return { glyph: item, annotation:'' }} ): dict;
 
 
 console.log('dict[0] (reduced): ',dict[0])
@@ -162,7 +162,7 @@ console.log(style)
 /* FONT LOADING ************************************************************ */
 var fontPath = cjkfonts[FONTOPTION].fontpath || FONTPATH ;
 const textToSVGglyph = fontPath ? TextToSVG.loadSync(fontPath) : TextToSVG.loadSync(); // custom font, else default
-const textToSVGannotation = TextToSVG.loadSync(); // default font
+const textToSVGannotation = TextToSVG.loadSync(fontPath); // default font
 
 /* ************************************************************************* */
 /* LOOOP WRITING SVGS ****************************************************** */
