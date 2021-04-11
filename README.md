@@ -29,28 +29,34 @@ npm install
 And flexibility for other variants.
 
 ## Usage
-The script is still best used by hacking `./index.js` in orther to set the initial variable to your convenience. You may also use is via shell commands and options (see below).
+The script is still best used by hacking `./index.js` in order to set the initial variables to your convenience. You may also use is via shell commands and options (see below).
 
-#### Commands
-Minimal example:
+#### Run
 
-```
-node index.js FONTOPTION=kaishu
+```bash
+# load font kaishu,ANNOTATIONFIELD= unihan field `kMandarin` for annotations, use provided list `Kangxi_radicals_214`
+$ FONTOPTION=kaishu ANNOTATIONFIELD=kMandarin LISTNAME=Kangxi_radicals_214 node index.js   
 ```
 
 #### Options
-* `DATAJSONFILES`: the file to be loaded to provide a list of characters or of characters objects.
-  * default: `['./data/kangxi-rad-to-char.json', './data/cmn-lists.json', 'data/unihan.json']
-  * characters alone : ['⼀',...]
-  * characters objects : `[ { "file": "⼀",  "glyph": "一",  "annotation": "yī" }, {...}] `.
+
+* `GLYPHS`: list of characters to split an process.
+  * ex: `一二三`
+* `LISTNAME`: list of characters loaded from _./data/cmn-lists.json_.
+  * default: ``
+  * range: `Hangul_letters`,`Kangxi_radicals_214`,`Subtlex_3000`,`Junda_3000`,`Taiwan_3000`,`HSK1`,`HSK2`,`HSK3`,`HSK4`,`HSK5`,`HSK6`,`France_255`,`France_355`,`France_400`,`France_405`,`AFPC_505`,`France_805`,`France_1555`
+* `ANNOTATIONFIELD`: key to tap into Unihan for annotations. Generated thanks to [Unihan-etl](//github.com/cihai/unihan-etl). For respective definitions, see [Unicode's Unihan](https://unicode.org/reports/tr38/#AlphabeticalListing).
+  * default: ``
+  * range:  `char`,`kRSKangXi`,`kTotalStrokes`,`kMandarin`,`kDefinition`,`kCantonese`,`kJapaneseOn`,`kJapaneseKun`,`kKorean`,`kVietnamese`,`kFrequency`,`kTang`,`kSimplifiedVariant`,`kTraditionalVariant`,`kHangul`
 * `FILESUFFIX` : general filename's suffixe for the current serie of files.
   * default: `'-kaishu.svg'`
 * `DIR` : where to output the files.
   * default: `'./build/'`
 * `FONTPATH` : path to the chosen font.
   * default: `'./fonts/cwtex/cwTeXQKaiZH-Medium.ttf'`
-* `FONTOPTION` : some fonts are provided with the project, provide its key to point to the file.
+* `FONTOPTION` : some fonts are provided via ./fonts/cjkfonts.js, use the json object's key.
   * default: `cwtex`
+  * range: `kaishu`, `cwtex`
 * `STYLE` : where to position annotations, relative to the character.
   * default: `'top'`
   * range: `'top'`, `'bottom'`,
@@ -64,20 +70,13 @@ node index.js FONTOPTION=kaishu
   * default: `'15 15 15 15'`
   * range: `'>0 >0 >0 >0'`
 
-Under consideration:
-* `DATAJSONKEY` : to tap into unihan. 
-  * default: `kMandarin`
-  * range : `kCantonese`, `kDefinition`, `kHangul`, `kHanyuPinlu`, `kHanyuPinyin`, `kMandarin`, `kTang`, `kPhonetic`, `kHDZRadBreak`, `kKorean`, `kJapaneseKun`, `kJapaneseOn` and more. See Unihan documentation for more details.
-
-## Options
-
 
 ## Meta-data
 I use Unihan data for Chinese, processed via [Unihan-etl](https://github.com/cihai/unihan-etl) :
 
 ```
 cd unihan-etl
-unihan-etl -f kCantonese kDefinition kHangul kHanyuPinlu kHanyuPinyin kMandarin kTang kPhonetic kHDZRadBreak kKorean kJapaneseKun kJapaneseOn -F json --no-expand --destination ../data/unihan.json
+unihan-etl -F json --destination ./unihan-language-fields.json --no-expand -f kRSKangXi kTotalStrokes kMandarin kDefinition kCantonese kJapaneseOn kJapaneseKun kKorean kVietnamese kFrequency kTang kSimplifiedVariant kTraditionalVariant kHangul
 ```
 
 ## Fonts
