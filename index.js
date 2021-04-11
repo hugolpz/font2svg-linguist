@@ -1,20 +1,21 @@
+//Run: $ ANNOTATIONFIELD='kMandarin' node index.js 
 /* takes in entry :                        */
 /* ************************************************************************* */
 /* Toolings **************************************************************** */
 const fs = require('fs');
-const TextToSVG = require('text-to-svg');
-//const unihan = require('unihan');
-const cjkUnihan = require('cjk-unihan');
+const TextToSVG= require('text-to-svg');
+const cjkfonts = require('./fonts/cjkfonts.js'); // personal fonts
 
 /* ************************************************************************* */
 /* INIT variables ********************************************************** */
-let DATAJSONFILES = process.env.DATAJSONFILES || ['./data/kangxi-rad-to-char.json', './data/cmn-lists.json', 'data/unihan.json'],
-  DATAJSONKEY = process.env.DATAJSONKEY || '', // to review
+let GLYPHS = process.env.GLYPHS || undefined, // ex: 'ABCD...'
+  ANNOTATIONFIELD = process.env.ANNOTATIONFIELD, // ex: 'kMandarin', "kDefinition", 
+  CMNLISTNAME = process.env.CMNLISTNAME || "Kangxi_radicals_214",
   FILESUFFIX = process.env.FILESUFFIX || '-kaishu.svg',
   DIR = process.env.DIR || './build/',
-  FONTOPTION = process.env.FONTOPTION || 'kaishu';
+  FONTOPTION = process.env.FONTOPTION || 'kaishu',
   FONTPATH = process.env.FONTPATH || './fonts/cwtex/cwTeXQKaiZH-Medium.ttf';
-let STYLE = process.env.STYLE || 'top', // to review
+let STYLE = process.env.STYLE || 'top',
   WIDTH = process.env.WIDTH || 300,
   HEIGHT = process.env.HEIGHT || 300,
   margins = process.env.MARGINS, // ex: '15 15 15 15' // to review
@@ -24,11 +25,43 @@ let STYLE = process.env.STYLE || 'top', // to review
     bottom: margins[2],
     left: margins[3]
   } : {
-    top: HEIGHT * 0.05,
-    right: WIDTH * 0.05,
-    bottom: HEIGHT * 0.05,
-    left: WIDTH * 0.05
+    top: HEIGHT*0.05,
+    right: WIDTH*0.05,
+    bottom: HEIGHT*0.05,
+    left: WIDTH*0.05
   };
+
+
+/* ************************************************************************* */
+/* Load characters list, unihan. Output: {glyph:'屮', annotation:'sprout'} * */
+const cmnList= JSON.parse(fs.readFileSync('./data/cmn-lists.json', 'utf8'));
+const unihanRaw = JSON.parse(fs.readFileSync('./data/UNIHAN-SELECTED-FIELDS.json', 'utf8'));
+const selectedList = cmnList.lists.find(item => item.name==CMNLISTNAME); //"Kangxi_radicals_214" // USE SEARCH ? // Selects list from cmnLists.json
+const selectedChars = typeof GLYPHS === 'string' ? GLYPHS.split('') : selectedList.list.split('');
+console.log('selectedChars: ',selectedChars.join())
+unihanSelectedChars = unihanRaw.filter((char) => selectedChars.includes(char.char))
+console.log('dictOfSelected[0]: ',unihanSelectedChars[0])
+var keepFirstWord = function(str){ 
+  return str?str.replace(/ ?KangX.+?\d+/gi,'').split(';')[0].split(',')[0].split(' or ')[0]:''; 
+};
+dict = unihanSelectedChars.map( item => {
+  return {
+    glyph: item.char, 
+    annotation:keepFirstWord(item[ANNOTATIONFIELD]),
+    phonetic: item['kMandarin'], // not used, just a human friendly helper.
+  }
+});
+console.log('dict[0] (reduced): ',dict[0])
+
+
+/* ************************************************************************* */
+/* Test cjkUnihan ********************************************************** 
+const cjkUnihan= require('cjk-unihan');
+var zi = '我';
+cjkUnihan.get(zi, function(err, result) {
+  console.log('cjkUnihan query on ' + zi + ': ', result);
+});
+*/
 
 
 /* ************************************************************************* */
@@ -37,84 +70,8 @@ fs.mkdirSync(DIR, 0o700, err => {
   if (err) {
     console.log('./build folder already exists');
   }
-});
+}); */
 
-/* ************************************************************************* */
-/* Test cjkUnihan ********************************************************** */
-var zi = '我';
-cjkUnihan.get(zi, function(err, result) {
-  console.log('cjkUnihan query on ' + zi + ': ', result);
-});
-
-/* ************************************************************************* */
-/* Set fonts for glyph and annotation ************************************** */
-const fonts = {
-  'edukai': {
-    fontpath: './fonts/edukai-3.ttf',
-    comment: 'TW! 教育部標準楷書字形檔 http://creativecommons.org/licenses/by-nd/3.0/tw/'
-  },
-  'xingkai': {
-    fontpath: './fonts/STXingkai.ttf',
-    comment: 'http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html'
-  },
-  'xiaozhuan': {
-    fontpath: './fonts/FZXiaoZhuanTi.ttf',
-    comment: 'http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html'
-  },
-  'lishu1': {
-    fontpath: './fonts/UnYetgul.ttf',
-    comment: 'trad only, http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html'
-  },
-  'lishu2': {
-    fontpath: './fonts/HanWangLiSuMedium.ttf',
-    comment: 'trad only, http://www.wildboar.net/multilingual/asian/chinese/language/fonts/unicode/non-microsoft/non-microsoft.html'
-  },
-  'zhuyin': {
-    fontpath: './fonts/HanWangKaiMediumChuIn.ttf',
-    comment: 'http://www.wazu.jp/gallery/Fonts_ChineseTraditional.html'
-  },
-  'notoSerif': {
-    fontpath: './fonts/noto/NotoSerifCJKtc-Medium.otf',
-    comment: ''
-  },
-  'notoSans': {
-    fontpath: './fonts/noto/NotoSansTC-Medium.otf',
-    comment: ''
-  },
-  'cwtex': {
-    fontpath: './fonts/cwtex/cwTeXQKaiZH-Medium.ttf',
-    comment: 'traditional characters, no simplified, radicals to extract from others',
-    'font-family': 'cwTeX Q KaiZH'
-  },
-  'kaishu': {
-    fontpath: './fonts/kaishu/AR_PL_UKai_CN.ttf',
-    comment: 'stores radicals, radical extension.'
-  },
-  'xinshu': {
-    fontpath: './fonts/hyi1gf.ttf',
-    comment: 'for CN users, store traditional glyph on simplified unicode points.'
-  } // m = 汉仪行楷繁
-};
-
-var fontPath = fonts[FONTOPTION].fontpath || FONTPATH ;
-const textToSVGglyph = fontPath ? TextToSVG.loadSync(fontPath) : TextToSVG.loadSync(); // custom font, or then default
-const textToSVGannotation = TextToSVG.loadSync(); // local custom font
-
-/* ************************************************************************* */
-/* TO EXPORT : CLEAN UP UNIHAN ********************************************* *
-var unihan = unihanRaw.map(function(obj) {
-    return {
-        char: obj.char,
-        kMandarin: obj.kMandarin
-    }
-})
-var unihanReady = unihanRaw.map(function(obj) {
-    return obj.char : {
-        glyph: obj.char,
-        annotation: obj.kMandarin
-    }
-})
-/* ************************************************************************* */
 
 /* ************************************************************************* */
 /* SVG outline and style *************************************************** */
@@ -126,9 +83,9 @@ var margin = {
 }; // duplication of init variables // to review
 var glyph = {
   width:  WIDTH - MARGINS.left - MARGINS.right,
-  height: HEIGHT - MARGINS.top - MARGINS.bottom,
+  height: (HEIGHT - MARGINS.top - MARGINS.bottom) *1.08,// 8% cancels in-font's padding.
   middle: WIDTH / 2,
-  center: WIDTH / 2
+  vcenter: WIDTH / 2 -7,  // 7px cancels in-font's vertical biaise (downward), we reduce distance from top by 7px
 };
 console.log(margin);
 console.log(glyph);
@@ -138,12 +95,12 @@ const styles = {
   'top': {
     glyph: {
       x: glyph.middle,
-      y: glyph.height - MARGINS.top,
-      fontSize: glyph.height / 25 * 27,
-      anchor: 'center',
+      y: `${ANNOTATIONFIELD? glyph.vcenter+40/2:glyph.vcenter}`, // if annotation, increase distance from top (increase margin-top)
+      fontSize: `${ANNOTATIONFIELD? glyph.height-40/2: glyph.height}`, // if annotation, increase reduce font-size
+      anchor: 'middle center',
       attributes: {
         fill: '#000',
-        'font-family': 'cwTeX Q KaiZH',
+        //'font-family': 'cwTeX Q KaiZH',
         'font-weight': 'bold',
         'font-style': 'normal'
       }
@@ -195,38 +152,34 @@ console.log(style)
 
 
 /* ************************************************************************* */
-/* Load list of characters ************************************************* */
-/* THisn iS REaLLy UGLY and UN SCALABLE !!!!! */
-let loaded = require(DATAJSONFILES[0]);
-let data = '';
-loaded.lists ? data = loaded.lists[8].list : data = loaded;
-typeof data === 'string' ? data = data.split('') : data = data;
-console.log('JSON data, proccessed:', data);
+/* FONT LOADING ************************************************************ */
+var fontPath = cjkfonts[FONTOPTION].fontpath || FONTPATH ;
+const textToSVGglyph = fontPath ? TextToSVG.loadSync(fontPath) : TextToSVG.loadSync(); // custom font, else default
+const textToSVGannotation = TextToSVG.loadSync(); // default font
 
 /* ************************************************************************* */
 /* LOOOP WRITING SVGS ****************************************************** */
-for (let char of data) {
-  // test if loading rich object { ,..., }
-  // let l = Object.keys(char).length || char.length;
-  // console.log('Char is '+ (l > 1 ? 'array':'character') + ' -> keys: ' + l + ', length: ' + char.length)
-  console.log('Char is: ',char)
+for (let char of dict) {
+  console.log('Char is: ',char);
 
-  // Create target filepath
-  let filePrefix = char.file || char,
-      filepath = DIR + filePrefix + FILESUFFIX;
-  console.log('filepath',filepath);
   // Create svg, then paths  
   let glyph = char.glyph || char,
     annotation = char.annotation || '';
   let svgGlyph = textToSVGglyph.getD(glyph, style.glyph),
     svgAnnotation = textToSVGannotation.getD(annotation, style.annotation);
-  let svgGlyphPath = svgGlyph ? `<path fill='#000' id='glyph' d='` + svgGlyph + `'/>` : '',
-    svgAnnotationPath = annotation.length > 0 ? `<path fill='#000' id='annotation' d='` + svgAnnotation + `'/>` : '';
+  let svgGlyphPath = svgGlyph ? `<path id='glyph' content='${glyph}' fill='#000' d='${svgGlyph}'/>` : '',
+    svgAnnotationPath = annotation.length > 0 ? `<path id='annotation' content="${annotation.replace(/\"/g,"'")}"  fill='#000' d='${svgAnnotation}'/>` : '';
   //Create valid svg file's data
-  let svg = `<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='` + WIDTH + `' height='` + HEIGHT + `' style='border:1px solid #666'>` +
-    svgGlyphPath +
-    svgAnnotationPath +
-    `</svg>`;
+  let svg = `<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='${WIDTH}' height='${HEIGHT}' style='border:1px solid #666'>
+  ${svgGlyphPath}
+  ${svgAnnotationPath?svgAnnotationPath:''}
+</svg>`;
+
+
+  // Create target filepath
+  let filePrefix = char.glyph || char,
+      filepath = DIR + filePrefix + FILESUFFIX;
+  console.log('filepath',filepath);
   // Print to file
   fs.writeFileSync(filepath, svg);
   console.log('/* Printed ! ******************************************************************* */');
